@@ -102,12 +102,12 @@ if __name__ == "__main__":
 
     input_file_path = sys.argv
     
-    if '--xyz2plh' in sys.argv and '--plg2xyz' in sys.argv:
+    if '--xyz2plh' in sys.argv and '--plh2xyz' in sys.argv:
         print('możesz podać tylko jedną flagę')
     elif '--xyz2plh' in sys.argv:
         
     
-        with open(r'wsp_inp.txt') as f:
+        with open(input_file_path,'r') as f:
             dane = f.readlines()
             dane = dane[4:]
             
