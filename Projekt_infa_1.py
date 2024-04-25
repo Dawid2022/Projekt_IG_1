@@ -1,5 +1,6 @@
 import sys
 from math import sin, cos, sqrt, atan, atan2, degrees, radians
+import numpy as np
 
 o = object()
 
@@ -84,6 +85,12 @@ class Transformacje:
         y = (Rn + h)*cos(phi)*sin(lam)
         z = (Rn + h)*sin(phi)-q
         return x,y,z
+
+    def Rneu(self,phi,lam):
+        R = np.array([[-sin(phi)*cos(lam), -sin(phi), cos(phi)*cos(lam)],
+                      [-sin(phi)*sin(lam), cos(lam), cos(phi)*sin(lam)],
+                      [cos(phi), 0, sin(phi)]])
+        return(R) 
 
 
 
