@@ -1,5 +1,6 @@
 import sys 
-from math import sin, cos, sqrt, atan, atan2, degrees, radians
+from math import sin, cos, sqrt, atan, atan2, degrees, radians, pi
+import numpy as np
 
 o = object()
 
@@ -84,7 +85,25 @@ class Transformacje:
         y = (Rn + h)*cos(phi)*sin(lam)
         z = (Rn + h)*sin(phi)-q
         return x,y,z
-
+    
+    
+    def lambda0_l(lam):
+        
+        if lam <= (11*pi)/120:
+            numer = 5
+            lam0 = np.radians(15)
+        elif lam <= (13*pi)/120 and lam > (11*pi)/120:
+            numer = 6
+            lam0 = np.radians(18)
+        elif lam <= (15*pi)/120 and lam > (13*pi)/120:
+            numer = 7
+            lam0 = np.radians(21)
+        elif lam > (15*pi)/120:
+            numer = 8
+            lam0 = np.radians(24)
+            
+        return(lam0,numer)
+        
 
 
 
