@@ -107,7 +107,7 @@ if __name__ == "__main__":
     elif '--xyz2plh' in sys.argv:
         
     
-        with open(input_file_path,'r') as f:
+        with open(input_file_path[2],'r') as f:
             dane = f.readlines()
             dane = dane[4:]
             
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     
     elif '--plh2xyz' in sys.argv:
     
-        with open(input_file_path,'r') as f:
+        with open(input_file_path[2],'r') as f:
             dane = f.readlines()
             dane = dane[1:]
             
