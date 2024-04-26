@@ -103,20 +103,56 @@ class Transformacje:
             lam0 = np.radians(24)
             
         return(lam0,numer)
+    
+    def sigma(self, phi):
         
+        A0 = 1 - self.ecc2/4 - (3*self.ecc2**2) /64 - (5*self.ecc2**3) /256
+        A2 = 3/8 * (self.ecc2 + (self.ecc2**2) /4 + (15*self.ecc2**3) /128)
+        A4 = 15/256 * (self.ecc2**2 + (3*self.ecc2**3) /4)
+        A6 = (35*self.ecc2**3) /3072
+        
+        sigma = self.a*(A0*phi - A2*sin(2*phi) + A4*sin(4*phi) - A6*sin(6*phi))    
+        
+        return(sigma)
+    
+    
+    def Np(self, phi):
+        
+        N = self.a / sqrt(1 - self.ecc2 * sin(phi)**2)
+        
+        return(N)
+
+
+    def f1(self,xGK): #!!!
+        
+        A0 = 1 - self.ecc2/4 - (3*self.ecc2**2) /64 - (5*self.ecc2**3) /256
+        fj = xGK/(self.a*A0)
+        
+        while True:
+            
+            fi = fj
+            sig = self.sigma(phi)
+            
+            fj = fi + (xGK - sig)/(self.a*A0)
+            
+            if np.abs(fj - fi) <(0.000001 / 206265):
+                break
+        
+        return(fj)
 
 
 
 if __name__ == "__main__":
     # utworzenie obiektu
     geo = Transformacje(model = "wgs84")
-    print(sys.argv)
+    print("To jest argv: ", sys.argv)
     # dane XYZ geocentryczne
-    X = 3664940.500; Y = 1409153.590; Z = 5009571.170
-    phi, lam, h = geo.xyz2plh(X, Y, Z)
-    print(phi, lam, h)
+    # X = 3664940.500; Y = 1409153.590; Z = 5009571.170
+    # phi, lam, h = geo.xyz2plh(X, Y, Z)
+    # print(phi, lam, h)
     # phi, lam, h = geo.xyz2plh2(X, Y, Z)
     # print(phi, lam, h)
+    
 
 
     input_file_path = sys.argv
@@ -126,7 +162,7 @@ if __name__ == "__main__":
     elif '--xyz2plh' in sys.argv:
         
     
-        with open(input_file_path,'r') as f:
+        with open(input_file_path[2],'r') as f:
             dane = f.readlines()
             dane = dane[4:]
             
@@ -149,7 +185,7 @@ if __name__ == "__main__":
     
     elif '--plh2xyz' in sys.argv:
     
-        with open(input_file_path,'r') as f:
+        with open(input_file_path[2],'r') as f:
             dane = f.readlines()
             dane = dane[1:]
             
