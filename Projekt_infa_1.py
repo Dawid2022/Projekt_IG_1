@@ -198,7 +198,7 @@ if __name__ == "__main__":
     #if len(flag) > 1:
      #   print('możesz podać tylko jedną flagę')
      
-    elif '--xyz2plh' in sys.argv:
+    if '--xyz2plh' in sys.argv:
         
         with open(input_file_path,'r') as f:
             dane = f.readlines()
@@ -210,7 +210,7 @@ if __name__ == "__main__":
                 d = d.strip()
                 x,y,z = d.split(',')
                 x,y,z = (float(x),float(y),float(z))
-                p,l,h = geo.xyz2plh(x,y,z, 'dms')
+                p,l,h = geo.xyz2plh(x,y,z)
                 plh.append([p,l,h])
             
         with open('wyniki_xyz2plh.txt','w') as f:
