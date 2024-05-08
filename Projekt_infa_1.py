@@ -1,5 +1,6 @@
-import sys 
+import sys
 from math import sin, cos, sqrt, atan, atan2, degrees, radians
+import numpy as np
 
 o = object()
 
@@ -75,6 +76,20 @@ class Transformacje:
             raise NotImplementedError(f"{output} - output format not defined")
             
     def plh2xyz(self, phi, lam, h):
+        """
+        Odwrotny algorytm Hirvonena - algorytm transformacji współrzędnych geodezyjnych 
+        długość szerokość i wysokość elipsoidalna(phi, lambda, h) na współrzędne ortokartezjańskie  (X, Y, Z).
+
+        Parameters
+        ----------
+        phi, lam, h : FLOAT
+            [dec_degree] współrzędne geodezyjne, 
+
+        Returns
+        -------
+        X, Y, Z : FLOAT
+            [metry] współrzędne ortokartezjańskie
+        """        
         phi = radians(phi)
         lam = radians(lam)
         
@@ -85,22 +100,69 @@ class Transformacje:
         z = (Rn + h)*sin(phi)-q
         return x,y,z
 
+    def xyz2neu(self, x, y, z, x_0, y_0, z_0):
+        """
+        Macierz R w transformacji współrzędnych XYZ na NEU jest macierzą rotacji, która pozwala przeliczyć 
+        współrzędne z układu kartezjańskiego na współrzędne związanego z Ziemią układu współrzędnych geodezyjnych NEU.
+        Wykorzystujemy bibliotekę numpy.
+        
+        Parameters
+        ----------
+        phi, lam: FLOAT
+            [dec_degree] współrzędne phi, lambda w układzie geodezyjnym, 
+       
+        Returns
+        -------
+        R : array
+            [niemianowane] macierz rotacji
+        """
+       
+        phi, lam, h = [radians(coord) for coord in self.xyz2plh(x, y, z)]
+                       
+        R = np.array([[-sin(lam), -sin(phi)*cos(lam), cos(phi)*cos(lam)],
+                     [  cos(lam), -sin(phi)*sin(lam), cos(phi)*sin(lam)],
+                     [         0,            cos(phi),        sin(phi)]])
+        """
+        Transformacja XYZ -> NEU - algorytm transformacji współrzędnych wektora pomiędzy dwoma punktami w układzie współrzędnych 
+        ortokartezjańskich (X, Y, Z) na współrzędne wektora pomiędzy dwoma punktami w układzie NEU: North, East, Up (N, E, U). 
+        Wykorzystujemy bibliotekę numpy.
 
+        Parameters
+        ----------
+        X, Y, Z : FLOAT
+            [metry] współrzędne w układzie orto-kartezjańskim, 
+        
+        X_0, Y_0, Z_0 : FLOAT
+            [metry] współrzędne punktu referencyjnego w układzie orto-kartezjańskim, 
+
+        Returns
+        -------
+        N, E, U : FLOAT
+            [metry] współrzędne w układzie NEU
+        """                                        
+                                              
+        xyz_t = np.array([[x -x_0],
+                          [y -y_0],
+                          [z -z_0]])
+        
+        [[E], [N], [U]] = R.T @ xyz_t
+    
+        return N, E, U
 
 
 if __name__ == "__main__":
     # utworzenie obiektu
     geo = Transformacje(model = "wgs84")
-    print(sys.argv)
+    # print(sys.argv)
     # dane XYZ geocentryczne
-    X = 3664940.500; Y = 1409153.590; Z = 5009571.170
-    phi, lam, h = geo.xyz2plh(X, Y, Z)
-    print(phi, lam, h)
+    #X = 3664940.500; Y = 1409153.590; Z = 5009571.170
+    # phi, lam, h = geo.xyz2plh(X, Y, Z)
+    # print(phi, lam, h)
     # phi, lam, h = geo.xyz2plh2(X, Y, Z)
     # print(phi, lam, h)
 
 
-    input_file_path = sys.argv
+    input_file_path = sys.argv[-1]
     
     if '--xyz2plh' in sys.argv and '--plh2xyz' in sys.argv:
         print('możesz podać tylko jedną flagę')
@@ -149,3 +211,26 @@ if __name__ == "__main__":
             for coords in xyz:
                 coords_xyz_line = ','.join([str(coord) for coord in coords])
                 f.write(coords_xyz_line + '\n')
+
+    elif '--xyz2neu' in sys.argv:
+        
+        with open(input_file_path,'r') as f:
+             lines = f.readlines()
+             lines = lines[4:]
+             
+             
+             coords_neu = []
+             for line in lines:
+                 line = line.strip()
+                 x, y, z = line.split(',')
+                 x, y, z = (float(x), float(y), float(z))
+                 x_0, y_0, z_0 = [float(coord) for coord in sys.argv[-4:-1]]
+                 n, e, u = geo.xyz2neu(x, y, z, x_0, y_0, z_0)
+                 coords_neu.append([n, e, u])
+                 
+        with open('wyniki_xyz2neu.txt','w') as f:
+             f.write('n[m], e[m], u[m] \n')
+             for coords in coords_neu:
+                 coords_neu_line = ','.join([f'{coord:11.3f}' for coord in coords])
+                 f.write(coords_neu_line + '\n')  
+       
