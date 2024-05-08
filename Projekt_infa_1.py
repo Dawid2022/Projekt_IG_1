@@ -250,19 +250,28 @@ if __name__ == "__main__":
     if '--header_lines' in sys.argv:
         
         header_lines = int(sys.argv[2])
+        flag = sys.argv[2:-1]
         
         if '--model' in sys.argv:
             
             model = sys.argv[4]
             geo = Transformacje(model)
-            
+            flag = sys.argv[4:-1]
+        
+    
     elif'--model' in sys.argv:
         
             model = sys.argv[2]
             geo = Transformacje(model)
+            flag = sys.argv[2:-1]
             
-    #if len(flag) > 1:
-     #   print('możesz podać tylko jedną flagę')
+    else:        
+        flag = sys.argv[1:-1]
+
+    if len(flag) > 1:
+        print('możesz podać tylko jedną flagę')
+        sys.exit()
+        
      
     if '--xyz2plh' in sys.argv:
         
