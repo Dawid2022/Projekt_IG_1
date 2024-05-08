@@ -165,6 +165,7 @@ class Transformacje:
 if __name__ == "__main__":
     # utworzenie obiektu
     geo = Transformacje(model = "wgs84")
+    header_lines = 1
     # dane XYZ geocentryczne
     # X = 3664940.500; Y = 1409153.590; Z = 5009571.170
     # phi, lam, h = geo.xyz2plh(X, Y, Z)
@@ -176,13 +177,32 @@ if __name__ == "__main__":
 
     input_file_path = sys.argv[-1]
     
-    if '--xyz2plh' in sys.argv and '--plh2xyz' in sys.argv:
-        print('możesz podać tylko jedną flagę')
+    #flag = sys.argv[1:-1]
+    #elip = sys.argv[2]
+    #model = str(elip
+    
+    if '--header_lines' in sys.argv:
+        
+        header_lines = int(sys.argv[2])
+        
+        if '--model' in sys.argv:
+            
+            model = sys.argv[4]
+            geo = Transformacje(model)
+            
+    elif'--model' in sys.argv:
+        
+            model = sys.argv[2]
+            geo = Transformacje(model)
+            
+    #if len(flag) > 1:
+     #   print('możesz podać tylko jedną flagę')
+     
     elif '--xyz2plh' in sys.argv:
         
         with open(input_file_path,'r') as f:
             dane = f.readlines()
-            dane = dane[4:]
+            dane = dane[header_lines:]
             
             plh = []
             for d in dane:
@@ -190,7 +210,7 @@ if __name__ == "__main__":
                 d = d.strip()
                 x,y,z = d.split(',')
                 x,y,z = (float(x),float(y),float(z))
-                p,l,h = geo.xyz2plh(x,y,z)
+                p,l,h = geo.xyz2plh(x,y,z, 'dms')
                 plh.append([p,l,h])
             
         with open('wyniki_xyz2plh.txt','w') as f:
@@ -204,7 +224,7 @@ if __name__ == "__main__":
     
         with open(input_file_path,'r') as f:
             dane = f.readlines()
-            dane = dane[1:]
+            dane = dane[header_lines:]
             
             xyz = []
             for d in dane:
@@ -218,7 +238,7 @@ if __name__ == "__main__":
         with open('wyniki_plh2xyz.txt','w') as f:
             f.write('X[m], Y[m], Z[m] \n')
             for coords in xyz:
-                coords_xyz_line = ','.join([str(coord) for coord in coords])
+                coords_xyz_line = ','.join([f'{coord:11.3}' for coord in coords])
                 f.write(coords_xyz_line + '\n')
     
     
@@ -226,13 +246,13 @@ if __name__ == "__main__":
         
         with open(input_file_path,'r') as f:
             dane = f.readlines()
-            dane = dane[1:]
-        
+            dane = dane[header_lines:]
+            
             xy = []
             for d in dane:
                 
                 d = d.strip()
-                phi_str,lam_str,h_str = d.split(',')
+                phi_str,lam_str,_ = d.split(',')
                 phi,lam = (float(phi_str),float(lam_str))
                 x,y = geo.pl2000(phi,lam)
                 xy.append([x,y])
@@ -248,13 +268,13 @@ if __name__ == "__main__":
         
         with open(input_file_path,'r') as f:
             dane = f.readlines()
-            dane = dane[1:]
+            dane = dane[header_lines:]
         
             xy = []
             for d in dane:
                 
                 d = d.strip()
-                phi_str,lam_str,h_str = d.split(',')
+                phi_str,lam_str,_ = d.split(',')
                 phi,lam = (float(phi_str),float(lam_str))
                 x,y = geo.pl92(phi,lam)
                 xy.append([x,y])
