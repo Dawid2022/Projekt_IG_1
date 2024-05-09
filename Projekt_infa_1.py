@@ -23,9 +23,9 @@ class Transformacje:
         elif model == "grs80":
             self.a = 6378137.0
             self.b = 6356752.31414036
-        elif model == "mars":
-            self.a = 3396900.0
-            self.b = 3376097.80585952
+        elif model == "krasowski":
+            self.a = 6378245.000
+            self.b = 6356863.018773
         else:
             raise NotImplementedError(f"{model} model not implemented")
         self.flat = (self.a - self.b) / self.a
@@ -108,6 +108,23 @@ class Transformacje:
     
     
     def pl2000(self,phi,lam):
+        """
+        Transformacja phi,lam -> PL-2000 - to algorytm transformacji współrzędnych elipsoidalnych (phi, lam)
+        na współrzędne płaskie w układzie odniesienia PL-2000 (x2000, y2000). Najpierw jest okreslana strefa (5, 6, 7 lub 8) 
+        oraz południk odwzorowaczy. Kolejno są obliczane współrzędne x i y w układzie Gaussa-Krügera, które wyznaczane 
+        są na podstawie złożonych równań uwzględniających różne czynniki związane z kątem phi i lam. Ostatecznie 
+        współrzędne te są cechowane do układu PL-2000. 
+
+        Parameters
+        ----------
+        phi,lam : FLOAT
+            [dec_degree] współrzędne geodezyjne, 
+
+        Returns
+        -------
+        x2000, y2000 : FLOAT
+            [metry] współrzędne płaskie w układzie PL-2000
+        """        
         phi = radians(phi)
         lam = radians(lam)
         
@@ -190,17 +207,32 @@ class Transformacje:
             [metry] współrzędne w układzie NEU
         """                                        
                                               
-        xyz_t = np.array([[X -X_0],
+        XYZ_t= np.array([[X -X_0],
                           [Y -Y_0],
                           [Z -Z_0]])
         
-        [[E], [N], [U]] = R.T @ xyz_t
+        [[E], [N], [U]] = R.T @ XYZ_t
     
         return N, E, U
 
 
 
     def pl92(self,phi,lam):
+        """
+        Transformacja phi,lam -> PL-1992 - algorytm transformacji współrzędnych elipsoidalnych (phi, lam)
+        na współrzędne płaskie w układzie odniesienia PL-1992 (x1992, y1992). Najpierw są obliczane współrzędne 
+        x i y w układzie Gaussa-Krügera, które obliczane są na podstawie złożonych równań uwzględniających różne 
+        czynniki związane z kątem phi i lam. Ostatecznie współrzędne te są cechowane do układu PL-1992. 
+        Parameters
+        ----------
+        phi, lam : FLOAT
+            [dec_degree] współrzędne geodezyjne,
+
+        Returns
+        -------
+        x1992, y1992 : FLOAT
+            [metry] współrzędne płaskie w układzie PL-1992
+        """
         phi = radians(phi)
         lam = radians(lam)
         
