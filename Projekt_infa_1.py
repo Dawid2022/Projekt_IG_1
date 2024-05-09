@@ -105,64 +105,6 @@ class Transformacje:
         Z = (Rn + h)*sin(phi)-q
         return X,Y,Z
     
-    
-    
-    def pl2000(self,phi,lam):
-        """
-        Transformacja phi,lam -> PL-2000 - to algorytm transformacji współrzędnych elipsoidalnych (phi, lam)
-        na współrzędne płaskie w układzie odniesienia PL-2000 (x2000, y2000). Najpierw jest okreslana strefa (5, 6, 7 lub 8) 
-        oraz południk odwzorowaczy. Kolejno są obliczane współrzędne x i y w układzie Gaussa-Krügera, które wyznaczane 
-        są na podstawie złożonych równań uwzględniających różne czynniki związane z kątem phi i lam. Ostatecznie 
-        współrzędne te są cechowane do układu PL-2000. 
-
-        Parameters
-        ----------
-        phi,lam : FLOAT
-            [dec_degree] współrzędne geodezyjne, 
-
-        Returns
-        -------
-        x2000, y2000 : FLOAT
-            [metry] współrzędne płaskie w układzie PL-2000
-        """        
-        phi = radians(phi)
-        lam = radians(lam)
-        
-        
-        if lam <= (11*pi)/120:
-            numer = 5
-            lam0 = np.radians(15)
-        elif lam <= (13*pi)/120 and lam > (11*pi)/120:
-            numer = 6
-            lam0 = np.radians(18)
-        elif lam <= (15*pi)/120 and lam > (13*pi)/120:
-            numer = 7
-            lam0 = np.radians(21)
-        elif lam > (15*pi)/120:
-            numer = 8
-            lam0 = np.radians(24)
-        
-        N = self.a / sqrt(1 - self.ecc2 * sin(phi)**2)
-        A0 = 1 - self.ecc2/4 - (3*self.ecc2**2) /64 - (5*self.ecc2**3) /256
-        A2 = 3/8 * (self.ecc2 + (self.ecc2**2) /4 + (15*self.ecc2**3) /128)
-        A4 = 15/256 * (self.ecc2**2 + (3*self.ecc2**3) /4)
-        A6 = (35*self.ecc2**3) /3072
-        sigma = self.a*(A0*phi - A2*sin(2*phi) + A4*sin(4*phi) - A6*sin(6*phi))    
-        
-        dlam = lam - lam0
-        t = tan(phi)
-        eta2 = self.eccp2 * (cos(phi)**2)
-        
-        xGK = sigma + ((dlam**2 * N*sin(phi)*cos(phi))/2) * (1 + ((dlam**2 /12) * cos(phi)**2) * (5 - t**2 + 9*eta2 + 4*eta2**2)
-                + ((dlam**4/360) * (cos(phi)**4)) * (61 - 58*t**2 + t**4 + 270*eta2 - 330*eta2*t**2))
-        yGK = (dlam*N*cos(phi)) * (1 + ((dlam**2 /6) * cos(phi)**2) * (1 - t**2 + eta2) 
-                + ((dlam**4 /120) * cos(phi)**4) * (5 - 18*t**2 + t**4 + 14*eta2 - 58*eta2*t**2))
-        
-        x2000 = xGK * 0.999923
-        y2000 = yGK * 0.999923 + numer*1000000 + 500000
-    
-        return(x2000,y2000)
-    
 
 
     def xyz2neu(self, X, Y, Z, X_0, Y_0, Z_0):
@@ -261,6 +203,64 @@ class Transformacje:
 
 
 
+    def pl2000(self,phi,lam):
+        """
+        Transformacja phi,lam -> PL-2000 - to algorytm transformacji współrzędnych elipsoidalnych (phi, lam)
+        na współrzędne płaskie w układzie odniesienia PL-2000 (x2000, y2000). Najpierw jest okreslana strefa (5, 6, 7 lub 8) 
+        oraz południk odwzorowaczy. Kolejno są obliczane współrzędne x i y w układzie Gaussa-Krügera, które wyznaczane 
+        są na podstawie złożonych równań uwzględniających różne czynniki związane z kątem phi i lam. Ostatecznie 
+        współrzędne te są cechowane do układu PL-2000. 
+
+        Parameters
+        ----------
+        phi,lam : FLOAT
+            [dec_degree] współrzędne geodezyjne, 
+
+        Returns
+        -------
+        x2000, y2000 : FLOAT
+            [metry] współrzędne płaskie w układzie PL-2000
+        """        
+        phi = radians(phi)
+        lam = radians(lam)
+        
+        
+        if lam <= (11*pi)/120:
+            numer = 5
+            lam0 = np.radians(15)
+        elif lam <= (13*pi)/120 and lam > (11*pi)/120:
+            numer = 6
+            lam0 = np.radians(18)
+        elif lam <= (15*pi)/120 and lam > (13*pi)/120:
+            numer = 7
+            lam0 = np.radians(21)
+        elif lam > (15*pi)/120:
+            numer = 8
+            lam0 = np.radians(24)
+        
+        N = self.a / sqrt(1 - self.ecc2 * sin(phi)**2)
+        A0 = 1 - self.ecc2/4 - (3*self.ecc2**2) /64 - (5*self.ecc2**3) /256
+        A2 = 3/8 * (self.ecc2 + (self.ecc2**2) /4 + (15*self.ecc2**3) /128)
+        A4 = 15/256 * (self.ecc2**2 + (3*self.ecc2**3) /4)
+        A6 = (35*self.ecc2**3) /3072
+        sigma = self.a*(A0*phi - A2*sin(2*phi) + A4*sin(4*phi) - A6*sin(6*phi))    
+        
+        dlam = lam - lam0
+        t = tan(phi)
+        eta2 = self.eccp2 * (cos(phi)**2)
+        
+        xGK = sigma + ((dlam**2 * N*sin(phi)*cos(phi))/2) * (1 + ((dlam**2 /12) * cos(phi)**2) * (5 - t**2 + 9*eta2 + 4*eta2**2)
+                + ((dlam**4/360) * (cos(phi)**4)) * (61 - 58*t**2 + t**4 + 270*eta2 - 330*eta2*t**2))
+        yGK = (dlam*N*cos(phi)) * (1 + ((dlam**2 /6) * cos(phi)**2) * (1 - t**2 + eta2) 
+                + ((dlam**4 /120) * cos(phi)**4) * (5 - 18*t**2 + t**4 + 14*eta2 - 58*eta2*t**2))
+        
+        x2000 = xGK * 0.999923
+        y2000 = yGK * 0.999923 + numer*1000000 + 500000
+    
+        return(x2000,y2000)
+
+
+
 
 if __name__ == "__main__":
     # utworzenie obiektu
@@ -275,53 +275,32 @@ if __name__ == "__main__":
     # print(phi, lam, h)
     
     input_file_path = sys.argv[-1]
-    length = len(sys.argv) - 2
-    i = 2
+    immutable_flags = ['--header_lines','--model']
+    
+    I = []
+    for i in sys.argv:
+        if i.startswith('--') and i not in immutable_flags:
+            I.append(i)
+    
+    if sys.argv[-1].endswith('.txt') == False:
+        print('Podaj plik txt!!!')
+        sys.exit()
+    
+    
+    if len(I) > 1:
+        print('możesz podać tylko jedną flagę!!!')
+        sys.exit()
     
     if '--header_lines' in sys.argv:
-        header_lines = int(sys.argv[2])
+
+        header_lines = int(sys.argv[sys.argv.index('--header_lines')+1])
+
+    if '--model' in sys.argv:
         
+        model = sys.argv[sys.argv.index('--model')+1]
+        geo = Transformacje(model)
+
     
-    if '--header_lines' in sys.argv:
-        
-        header_lines = int(sys.argv[2])
-        flag = sys.argv[2:-1]
-        
-        if '--model' in sys.argv:
-            
-            model = sys.argv[4]
-            geo = Transformacje(model)
-            
-            if '--xyz2neu' in sys.argv:
-                flag = sys.argv[4:-1]
-                print('możesz podać tylko jedną flagę')
-                sys.exit()
-    
-    elif'--model' in sys.argv:
-        
-            model = sys.argv[2]
-            geo = Transformacje(model)
-            flag = sys.argv[2:-1]
-            if '--xyz2neu' in sys.argv and len(flag) > 1:
-                print('możesz podać tylko jedną flagę')
-                sys.exit()
-                
-    else:        
-        flag = sys.argv[1:-1]
-        
-    
-    
-    
-        
-        
-        
-    if '--xyz2neu' in sys.argv:
-        
-        if len(flag) > 1:
-            print('możesz podać tylko jedną flagę')
-            sys.exit()
-        
-     
     if '--xyz2plh' in sys.argv:
         
         with open(input_file_path,'r') as f:
@@ -371,15 +350,19 @@ if __name__ == "__main__":
         
         with open(input_file_path,'r') as f:
              lines = f.readlines()
-             lines = lines[4:]
+             lines = lines[header_lines:]
              
-             
+             u = sys.argv.index('--xyz2neu')+1
+             u2 = sys.argv.index(sys.argv[-1])
+             uu = sys.argv[u:-1] 
+             print(u,u2)
+             print(uu)
              coords_neu = []
              for line in lines:
                  line = line.strip()
                  x, y, z = line.split(',')
                  x, y, z = (float(x), float(y), float(z))
-                 x_0, y_0, z_0 = [float(coord) for coord in sys.argv[-4:-1]]
+                 x_0, y_0, z_0 = [float(coord) for coord in sys.argv[sys.argv.index('--xyz2neu')+1:-1]]
                  n, e, u = geo.xyz2neu(x, y, z, x_0, y_0, z_0)
                  coords_neu.append([n, e, u])
                  
