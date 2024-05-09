@@ -13,3 +13,6 @@ Obsługiwane systemy:
   Do działania programu konieczne jest utworzenie pliku ze współrzędnymi z rozszerzeniem txt. W      pliku ze współrzędnymi muszą znajdować się współrzędne oddzielone przecinkiem, każdy kolejny       punkt musi znajdować się w nowym wierszu. W przypadku współrzędnych kartezjański. Format:          "X;Y;Z" Wartości powinny być podawane w METRACH, separator dziesiętny - KROPKA. W przypadku        współrzędnych geodezyjnych. Format: "phi;lam;h" Wartości "phi" i "lam" powinny być podawane w      STOPNIACH DZIESIĘTNYCH, wartości "h" w METRACH separator dziesiętny - KROPKA.
 
   W celu wywołania programu konieczne jest uruchomienie wiersza poleceń w lokalizacji, w której      znajduje się program.
+  Wywoływanie funkcji:
+  W celu wywołania funkcji należy użyć komendy:
+  >   python Projekt_infa_1.py nazwa elipsoidy nazwa funkcji nazwa pliku.txt
