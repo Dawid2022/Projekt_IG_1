@@ -241,11 +241,14 @@ if __name__ == "__main__":
     # print(phi, lam, h)
     # phi, lam, h = geo.xyz2plh2(X, Y, Z)
     # print(phi, lam, h)
-    input_file_path = sys.argv[-1]
-    #flag = sys.argv[1:-1]
-    #elip = sys.argv[2]
-    #model = str(elip
     
+    input_file_path = sys.argv[-1]
+    length = len(sys.argv) - 2
+    i = 2
+    
+    if '--header_lines' in sys.argv:
+        header_lines = int(sys.argv[2])
+        
     
     if '--header_lines' in sys.argv:
         
@@ -256,21 +259,35 @@ if __name__ == "__main__":
             
             model = sys.argv[4]
             geo = Transformacje(model)
-            flag = sys.argv[4:-1]
-        
+            
+            if '--xyz2neu' in sys.argv:
+                flag = sys.argv[4:-1]
+                print('możesz podać tylko jedną flagę')
+                sys.exit()
     
     elif'--model' in sys.argv:
         
             model = sys.argv[2]
             geo = Transformacje(model)
             flag = sys.argv[2:-1]
-            
+            if '--xyz2neu' in sys.argv and len(flag) > 1:
+                print('możesz podać tylko jedną flagę')
+                sys.exit()
+                
     else:        
         flag = sys.argv[1:-1]
-
-    if len(flag) > 1:
-        print('możesz podać tylko jedną flagę')
-        sys.exit()
+        
+    
+    
+    
+        
+        
+        
+    if '--xyz2neu' in sys.argv:
+        
+        if len(flag) > 1:
+            print('możesz podać tylko jedną flagę')
+            sys.exit()
         
      
     if '--xyz2plh' in sys.argv:
