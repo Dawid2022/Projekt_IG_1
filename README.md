@@ -74,7 +74,7 @@ Przykładowe formaty plików txt wraz z opisem kolejnych kolumn dla poszczególn
 
   -plh2xyz:
 
-   >		python Projekt_infa_1.py plh2xyz wyniki_xyz2plh.txt 
+   >		python Projekt_infa_1.py --plh2xyz wyniki_xyz2plh.txt 
 				
 Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach oddzielonych spacjami znajdują się:
 	- Współrzędna X punktu wyrażona w metrach,
@@ -89,7 +89,7 @@ Przykładowy plik ze współrzędnymi:
 
 - xyz2plh:
 
-   >		python Projekt_infa_1.py xyz2plh wsp_inp.txt
+   >		python Projekt_infa_1.py --xyz2plh wsp_inp.txt
 				
 Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
 	- Współrzędna Fi punktu wyrażona w stopniach,
@@ -103,7 +103,7 @@ Przykładowy plik ze współrzędnymi:
 
 -neu
 
-   >		python Projekt_infa_1.py xyz2neu 3664940.500 1409153.590 5009571.170  wsp_inp.txt
+   >		python Projekt_infa_1.py --xyz2neu 3664940.500 1409153.590 5009571.170  wsp_inp.txt
 				
 Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
 	- Współrzędna N punktu wyrażona w metrach,
