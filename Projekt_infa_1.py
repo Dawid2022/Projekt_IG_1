@@ -27,7 +27,7 @@ class Transformacje:
             self.a = 6378245.000
             self.b = 6356863.018773
         else:
-            raise NotImplementedError(f"{model} model not implemented")
+            raise NotImplementedError(f"elipsoida {model} nie została zaimplementowana")
         self.flat = (self.a - self.b) / self.a
         self.ecc = sqrt(2 * self.flat - self.flat ** 2) # first eccentricity  WGS84:0.0818191910428 
         self.ecc2 = (2 * self.flat - self.flat ** 2) # first eccentricity**2
@@ -36,7 +36,7 @@ class Transformacje:
 
 
     
-    def xyz2plh(self, X, Y, Z, output = 'dec_degree'):
+    def xyz2plh(self, X, Y, Z, units = 'dec_degree'):
         """
         Algorytm Hirvonena - algorytm transformacji współrzędnych ortokartezjańskich (x, y, z)
         na współrzędne geodezyjne długość szerokość i wysokośc elipsoidalna (phi, lam, h). Jest to proces iteracyjny. 
@@ -54,7 +54,7 @@ class Transformacje:
             [stopnie dziesiętne] - długośc geodezyjna.
         h : TYPE
             [metry] - wysokość elipsoidalna
-        output [STR] - optional, defoulf 
+        units [STR] - optional, defoulf 
             dec_degree - decimal degree
             dms - degree, minutes, sec
         """
@@ -69,18 +69,18 @@ class Transformacje:
         lon = atan(Y/X)
         N = self.a / sqrt(1 - self.ecc2 * (sin(lat))**2);
         h = r / cos(lat) - N       
-        if output == "dec_degree":
-            return degrees(lat), degrees(lon), h 
-        elif output == "dms":
+        if units == "dec_degree":
+            return f"{degrees(lat):.6}", f"{degrees(lon):.6}", f"{h:.3}" 
+        elif units == "dms":
             lat = self.deg2dms(degrees(lat))
             lon = self.deg2dms(degrees(lon))
             return f"{lat[0]:02d}:{lat[1]:02d}:{lat[2]:.2f}", f"{lon[0]:02d}:{lon[1]:02d}:{lon[2]:.2f}", f"{h:.3f}"
         else:
-            raise NotImplementedError(f"{output} - output format not defined")
+            raise NotImplementedError(f"{units} - nie ma takiego formatu jednostek")
     
             
     
-    def plh2xyz(self, phi, lam, h):
+    def plh2xyz(self, phi, lam, h, units = 'dec_degree'): #!!!
         """
         Odwrotny algorytm Hirvonena - algorytm transformacji współrzędnych geodezyjnych 
         długość szerokość i wysokość elipsoidalna(phi, lambda, h) na współrzędne ortokartezjańskie  (X, Y, Z).
@@ -94,9 +94,14 @@ class Transformacje:
         -------
         X, Y, Z : FLOAT
             [metry] współrzędne ortokartezjańskie
-        """        
-        phi = radians(phi)
-        lam = radians(lam)
+        """ 
+        # if units == 'dec_degree':
+        #     phi = radians(phi)
+        #     lam = radians(lam)
+        # elif units == "dms":
+        #     s
+        # else:
+        #     raise NotImplementedError(f"{units} - nie ma takiego formatu jednostek")
         
         Rn = self.a/sqrt(1-self.ecc2*sin(phi)**2)
         q = Rn *self.ecc2 *sin(phi)
@@ -259,160 +264,177 @@ class Transformacje:
     
         return(x2000,y2000)
 
+            
 
 
 
 if __name__ == "__main__":
-    # utworzenie obiektu
+
     geo = Transformacje(model = "wgs84")
     header_lines = 1
-    # print(sys.argv)
-    # dane XYZ geocentryczne
-    # X = 3664940.500; Y = 1409153.590; Z = 5009571.170
-    # phi, lam, h = geo.xyz2plh(X, Y, Z)
-    # print(phi, lam, h)
-    # phi, lam, h = geo.xyz2plh2(X, Y, Z)
-    # print(phi, lam, h)
-    
     input_file_path = sys.argv[-1]
-    immutable_flags = ['--header_lines','--model']
+    immutable_flags = ['--header_lines','--model','--units']
+    units = 'dec_degree'
     
     I = []
     for i in sys.argv:
         if i.startswith('--') and i not in immutable_flags:
             I.append(i)
     
-    if sys.argv[-1].endswith('.txt') == False:
-        print('Podaj plik txt!!!')
-        sys.exit()
+    # if sys.argv[-1].endswith('.txt') == False:
+    #     print('Podaj plik txt!!!')
+    #     sys.exit()
     
     
     if len(I) > 1:
         print('możesz podać tylko jedną flagę!!!')
         sys.exit()
-    
+
     if '--header_lines' in sys.argv:
 
         header_lines = int(sys.argv[sys.argv.index('--header_lines')+1])
-
+        
     if '--model' in sys.argv:
         
         model = sys.argv[sys.argv.index('--model')+1]
         geo = Transformacje(model)
-
     
-    if '--xyz2plh' in sys.argv:
-        
-        with open(input_file_path,'r') as f:
+    if '--units' in sys.argv:
 
-            dane = f.readlines()
-            dane = dane[header_lines:]
-            
-            plh = []
-            for d in dane:
-            
-                d = d.strip()
-                x,y,z = d.split(',')
-                x,y,z = (float(x),float(y),float(z))
-                p,l,h = geo.xyz2plh(x,y,z)
-                plh.append([p,l,h])
-            
-        with open('wyniki_xyz2plh.txt','w') as f:
-            f.write('phi[deg], lam[deg], h[m] \n')
-            for coords in plh:
-                coords_plh_line = ','.join([str(coord) for coord in coords])
-                f.write(coords_plh_line + '\n')
+        units = sys.argv[sys.argv.index('--units')+1]
         
+
+    try:
+        
+        if '--xyz2plh' in sys.argv:
+            
+            with open(input_file_path,'r') as f:
     
-    elif '--plh2xyz' in sys.argv:
-    
-        with open(input_file_path,'r') as f:
-            dane = f.readlines()
-            dane = dane[header_lines:]
+                dane = f.readlines()
+                dane = dane[header_lines:]
+                
+                plh = []
+                for d in dane:
+                
+                    d = d.strip()
+                    x,y,z = d.split(',')
+                    x,y,z = (float(x),float(y),float(z))
+                    p,l,h = geo.xyz2plh(x,y,z)
+                    plh.append([p,l,h])
+                
+            with open('wyniki_xyz2plh.txt','w') as f:
+                f.write('phi[deg], lam[deg], h[m] \n')
+                for coords in plh:
+                    coords_plh_line = ','.join([str(coord) for coord in coords])
+                    f.write(coords_plh_line + '\n')
             
-            xyz = []
-            for d in dane:
-            
-                d = d.strip()
-                phi_str,lam_str,h_str = d.split(',')
-                phi,lam,h = (float(phi_str),float(lam_str),float(h_str))
-                x,y,z = geo.plh2xyz(phi,lam,h)
-                xyz.append([x,y,z])
-            
-        with open('wyniki_plh2xyz.txt','w') as f:
-            f.write('X[m], Y[m], Z[m] \n')
-            for coords in xyz:
-                coords_xyz_line = ','.join([str(coord) for coord in coords])
-                f.write(coords_xyz_line + '\n')
-
-
-    elif '--xyz2neu' in sys.argv:
         
-        with open(input_file_path,'r') as f:
-             lines = f.readlines()
-             lines = lines[header_lines:]
-             
-             u = sys.argv.index('--xyz2neu')+1
-             u2 = sys.argv.index(sys.argv[-1])
-             uu = sys.argv[u:-1] 
-             print(u,u2)
-             print(uu)
-             coords_neu = []
-             for line in lines:
-                 line = line.strip()
-                 x, y, z = line.split(',')
-                 x, y, z = (float(x), float(y), float(z))
-                 x_0, y_0, z_0 = [float(coord) for coord in sys.argv[sys.argv.index('--xyz2neu')+1:-1]]
-                 n, e, u = geo.xyz2neu(x, y, z, x_0, y_0, z_0)
-                 coords_neu.append([n, e, u])
+        elif '--plh2xyz' in sys.argv:
+        
+            with open(input_file_path,'r') as f:
+                dane = f.readlines()
+                dane = dane[header_lines:]
+                
+                xyz = []
+                for d in dane:
+                
+                    d = d.strip()
+                    phi_str,lam_str,h_str = d.split(',')
+                    phi,lam,h = (float(phi_str),float(lam_str),float(h_str))
+                    x,y,z = geo.plh2xyz(phi,lam,h,)
+                    xyz.append([x,y,z])
+                
+            with open('wyniki_plh2xyz.txt','w') as f:
+                f.write('X[m], Y[m], Z[m] \n')
+                for coords in xyz:
+                    coords_xyz_line = ','.join([str(coord) for coord in coords])
+                    f.write(coords_xyz_line + '\n')
+    
+    
+        elif '--xyz2neu' in sys.argv:
+
+            with open(input_file_path,'r') as f:
+                 lines = f.readlines()
+                 lines = lines[header_lines:]
                  
-        with open('wyniki_xyz2neu.txt','w') as f:
-             f.write('n[m], e[m], u[m] \n')
-             for coords in coords_neu:
-                 coords_neu_line = ','.join([f'{coord:11.3f}' for coord in coords])
-                 f.write(coords_neu_line + '\n')  
-
+                 coords_neu = []
+                 for line in lines:
+                     line = line.strip()
+                     x, y, z = line.split(',')
+                     x, y, z = (float(x), float(y), float(z))
+                     try:
+                         x_0, y_0, z_0 = [float(coord) for coord in sys.argv[sys.argv.index('--xyz2neu')+1:-1]]
+                     
+                     except ValueError:
+                         try:
+                             
+                             for coord in sys.argv[sys.argv.index('--xyz2neu')+1:-1]:
     
-    elif '--pl2000' in sys.argv:
-        
-        with open(input_file_path,'r') as f:
-            dane = f.readlines()
-            dane = dane[header_lines:]
-            
-            xy = []
-            for d in dane:
+                                 coord = coord.strip()
+                                 x_0, y_0, z_0 = coord.split(',')
+                                 x_0, y_0, z_0 = (float(x_0), float(y_0), float(z_0))
+                             
+                         except ValueError:
+                             print('Błędnie podałes współrzędne.')
+                             sys.exit()
+                                          
+                     n, e, u = geo.xyz2neu(x, y, z, x_0, y_0, z_0)
+                     coords_neu.append([n, e, u])
                 
-                d = d.strip()
-                phi_str,lam_str,_ = d.split(',')
-                phi,lam = (float(phi_str),float(lam_str))
-                x,y = geo.pl2000(phi,lam)
-                xy.append([x,y])
-            
-        with open('wyniki_pl2000.txt','w') as f:
-            f.write('x2000[m], y2000[m] \n')
-            for coords in xy:
-                coords_xy_line = ','.join([str(coord) for coord in coords])
-                f.write(coords_xy_line + '\n')
-
-                
-    elif '--pl1992' in sys.argv:
+            with open('wyniki_xyz2neu.txt','w') as f:
+                 f.write('n[m], e[m], u[m] \n')
+                 for coords in coords_neu:
+                     coords_neu_line = ','.join([f'{coord:11.3f}' for coord in coords])
+                     f.write(coords_neu_line + '\n')  
+    
         
-        with open(input_file_path,'r') as f:
-            dane = f.readlines()
-            dane = dane[header_lines:]
-        
-            xy = []
-            for d in dane:
-                
-                d = d.strip()
-                phi_str,lam_str,_ = d.split(',')
-                phi,lam = (float(phi_str),float(lam_str))
-                x,y = geo.pl92(phi,lam)
-                xy.append([x,y])
+        elif '--pl2000' in sys.argv:
             
-        with open('wyniki_pl1992.txt','w') as f:
-            f.write('x1992[m], y1992[m] \n')
-            for coords in xy:
-                coords_xy_line = ','.join([str(coord) for coord in coords])
-                f.write(coords_xy_line + '\n')
+            with open(input_file_path,'r') as f:
+                dane = f.readlines()
+                dane = dane[header_lines:]
+                
+                xy = []
+                for d in dane:
+                    
+                    d = d.strip()
+                    phi_str,lam_str,_ = d.split(',')
+                    phi,lam = (float(phi_str),float(lam_str))
+                    x,y = geo.pl2000(phi,lam)
+                    xy.append([x,y])
+                
+            with open('wyniki_pl2000.txt','w') as f:
+                f.write('x2000[m], y2000[m] \n')
+                for coords in xy:
+                    coords_xy_line = ','.join([str(coord) for coord in coords])
+                    f.write(coords_xy_line + '\n')
+    
+                    
+        elif '--pl1992' in sys.argv:
+            
+            with open(input_file_path,'r') as f:
+                dane = f.readlines()
+                dane = dane[header_lines:]
+            
+                xy = []
+                for d in dane:
+                    
+                    d = d.strip()
+                    phi_str,lam_str,_ = d.split(',')
+                    phi,lam = (float(phi_str),float(lam_str))
+                    x,y = geo.pl92(phi,lam)
+                    xy.append([x,y])
+                
+            with open('wyniki_pl1992.txt','w') as f:
+                f.write('x1992[m], y1992[m] \n')
+                for coords in xy:
+                    coords_xy_line = ','.join([str(coord) for coord in coords])
+                    f.write(coords_xy_line + '\n')
+    
+    except UnicodeDecodeError:
+        print('Podałes plik inny niż txt. Podaj prawidłowy plik.')
+        sys.exit()
+    except Exception:
+        print('Brak podanego pliku. Podaj inny plik.')
+        sys.exit()
 
