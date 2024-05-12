@@ -5,7 +5,7 @@ import numpy as np
 o = object()
 
 class Transformacje:
-    def __init__(self, model: str = "wgs84"):
+    def __init__(self, model: str = "grs80"):
         """
         Parametry elipsoid:
             a - duża półoś elipsoidy - promień równikowy
@@ -27,7 +27,10 @@ class Transformacje:
             self.a = 6378245.000
             self.b = 6356863.018773
         else:
-            raise NotImplementedError(f"elipsoida {model} nie została zaimplementowana")
+            # raise NotImplementedError(f"elipsoida {model} nie została zaimplementowana")
+            print(f"elipsoida {model} nie została zaimplementowana")
+            sys.exit()
+            
         self.flat = (self.a - self.b) / self.a
         self.ecc = sqrt(2 * self.flat - self.flat ** 2) # first eccentricity  WGS84:0.0818191910428 
         self.ecc2 = (2 * self.flat - self.flat ** 2) # first eccentricity**2
@@ -69,18 +72,29 @@ class Transformacje:
         lon = atan(Y/X)
         N = self.a / sqrt(1 - self.ecc2 * (sin(lat))**2);
         h = r / cos(lat) - N       
+        # if units == "dec_degree":
+        #     return f"{degrees(lat):.6}", f"{degrees(lon):.6}", f"{h:.3}" 
+        # elif units == "dms":
+        #     lat = self.deg2dms(degrees(lat))
+        #     lon = self.deg2dms(degrees(lon))
+        #     return f"{lat[0]:02d}:{lat[1]:02d}:{lat[2]:.2f}", f"{lon[0]:02d}:{lon[1]:02d}:{lon[2]:.2f}", f"{h:.3f}"
+        # else:
+        #     raise NotImplementedError(f"{units} - nie ma takiego formatu jednostek")
+        
         if units == "dec_degree":
-            return f"{degrees(lat):.6}", f"{degrees(lon):.6}", f"{h:.3}" 
+            # return f"{degrees(lat):.8f}", f"{degrees(lon):.8f}", f"{h:.3f}" 
+            return f'{degrees(lat)}', f'{degrees(lon)}', f' {h}'
         elif units == "dms":
-            lat = self.deg2dms(degrees(lat))
-            lon = self.deg2dms(degrees(lon))
-            return f"{lat[0]:02d}:{lat[1]:02d}:{lat[2]:.2f}", f"{lon[0]:02d}:{lon[1]:02d}:{lon[2]:.2f}", f"{h:.3f}"
+            lat = self.deg2dms(lat)
+            lon = self.deg2dms(lon)
+            return f"{lat}", f"{lon}", f" {h:.3f}"
         else:
-            raise NotImplementedError(f"{units} - nie ma takiego formatu jednostek")
-    
+            # raise NotImplementedError(f"{units} - nie ma takiego formatu jednostek")
+            print(f"{units} - nie ma takiego formatu jednostek")
+            sys.exit()
             
     
-    def plh2xyz(self, phi, lam, h, units = 'dec_degree'): #!!!
+    def plh2xyz(self, phi, lam, h,):
         """
         Odwrotny algorytm Hirvonena - algorytm transformacji współrzędnych geodezyjnych 
         długość szerokość i wysokość elipsoidalna(phi, lambda, h) na współrzędne ortokartezjańskie  (X, Y, Z).
@@ -266,52 +280,83 @@ class Transformacje:
 
             
 
+    def deg2dms(self, data):
+        
+        x = abs(data)
+        x = x * 180 / pi
+        d = int(x)
+        m = int(60 * (x - d))
+        s = (x - d - m/60) * 3600
+        d = int(data * 180 / pi)
+        
+        if m<10:
+            m = f'0{m:1d}'
+        else:
+            m = f'{m:2d}'
+        
+        if s<10:
+            s = f'0{s:2.5f}'
+        else:
+            s = f'{s:2.5f}'
+        
+        return(f'{d:3d}:{m}:{s}')
+        
+        
+
+
 
 
 if __name__ == "__main__":
 
-    geo = Transformacje(model = "wgs84")
+    geo = Transformacje(model = "grs80")
     header_lines = 1
+    # sys_line = map(str.upper, sys.argv[1:])
+    sys_line = [sys.argv[0]]
+    
+    for i in sys.argv[1:-1]:
+        i = i.lower()
+        sys_line.append(i)
+    sys_line.append(sys.argv[-1])
+    
     input_file_path = sys.argv[-1]
     immutable_flags = ['--header_lines','--model','--units']
     units = 'dec_degree'
     
     I = []
-    for i in sys.argv:
+    for i in sys_line:
         if i.startswith('--') and i not in immutable_flags:
             I.append(i)
-    
-    # if sys.argv[-1].endswith('.txt') == False:
-    #     print('Podaj plik txt!!!')
-    #     sys.exit()
-    
-    
+
     if len(I) > 1:
-        print('możesz podać tylko jedną flagę!!!')
+        print('Możesz podać tylko jedną flagę!!!')
         sys.exit()
 
-    if '--header_lines' in sys.argv:
-
-        header_lines = int(sys.argv[sys.argv.index('--header_lines')+1])
+    if '--header_lines' in sys_line:
+        try:
+            idx = sys_line.index('--header_lines')+1
+            header_lines = abs(int(sys_line[idx]))
+        except ValueError:
+            print(f'{sys_line[idx]} nie jest liczbą całkowitą.')
+            sys.exit()
+            
+    if '--model' in sys_line:
         
-    if '--model' in sys.argv:
-        
-        model = sys.argv[sys.argv.index('--model')+1]
+        model = sys_line[sys_line.index('--model')+1]
         geo = Transformacje(model)
     
-    if '--units' in sys.argv:
+    if '--units' in sys_line:
 
-        units = sys.argv[sys.argv.index('--units')+1]
+        units = sys_line[sys_line.index('--units')+1]
         
 
     try:
         
-        if '--xyz2plh' in sys.argv:
+        if '--xyz2plh' in sys_line:
             
             with open(input_file_path,'r') as f:
-    
                 dane = f.readlines()
                 dane = dane[header_lines:]
+
                 
                 plh = []
                 for d in dane:
@@ -319,7 +364,7 @@ if __name__ == "__main__":
                     d = d.strip()
                     x,y,z = d.split(',')
                     x,y,z = (float(x),float(y),float(z))
-                    p,l,h = geo.xyz2plh(x,y,z)
+                    p,l,h = geo.xyz2plh(x,y,z,units)
                     plh.append([p,l,h])
                 
             with open('wyniki_xyz2plh.txt','w') as f:
@@ -329,7 +374,7 @@ if __name__ == "__main__":
                     f.write(coords_plh_line + '\n')
             
         
-        elif '--plh2xyz' in sys.argv:
+        elif '--plh2xyz' in sys_line:
         
             with open(input_file_path,'r') as f:
                 dane = f.readlines()
@@ -351,7 +396,7 @@ if __name__ == "__main__":
                     f.write(coords_xyz_line + '\n')
     
     
-        elif '--xyz2neu' in sys.argv:
+        elif '--xyz2neu' in sys_line:
 
             with open(input_file_path,'r') as f:
                  lines = f.readlines()
@@ -363,12 +408,12 @@ if __name__ == "__main__":
                      x, y, z = line.split(',')
                      x, y, z = (float(x), float(y), float(z))
                      try:
-                         x_0, y_0, z_0 = [float(coord) for coord in sys.argv[sys.argv.index('--xyz2neu')+1:-1]]
+                         x_0, y_0, z_0 = [float(coord) for coord in sys_line[sys_line.index('--xyz2neu')+1:-1]]
                      
                      except ValueError:
                          try:
                              
-                             for coord in sys.argv[sys.argv.index('--xyz2neu')+1:-1]:
+                             for coord in sys_line[sys_line.index('--xyz2neu')+1:-1]:
     
                                  coord = coord.strip()
                                  x_0, y_0, z_0 = coord.split(',')
@@ -388,7 +433,7 @@ if __name__ == "__main__":
                      f.write(coords_neu_line + '\n')  
     
         
-        elif '--pl2000' in sys.argv:
+        elif '--pl2000' in sys_line:
             
             with open(input_file_path,'r') as f:
                 dane = f.readlines()
@@ -410,7 +455,7 @@ if __name__ == "__main__":
                     f.write(coords_xy_line + '\n')
     
                     
-        elif '--pl1992' in sys.argv:
+        elif '--pl1992' in sys_line:
             
             with open(input_file_path,'r') as f:
                 dane = f.readlines()
@@ -432,9 +477,9 @@ if __name__ == "__main__":
                     f.write(coords_xy_line + '\n')
     
     except UnicodeDecodeError:
-        print('Podałes plik inny niż txt. Podaj prawidłowy plik.')
+        print('Plik {sys_line[-1]} ma inne rozszerzenie niż txt. Podaj prawidłowy plik.')
         sys.exit()
-    except Exception:
-        print('Brak podanego pliku. Podaj inny plik.')
+    except FileNotFoundError:
+        print(f'Brak podanego pliku. {sys_line[-1]} nieznajduje się w folderze.')
         sys.exit()
 
