@@ -263,30 +263,6 @@ class Transformacje:
     
         return x2000,y2000
 
-            
-
-    def deg2dms(self, data):
-        
-        x = abs(data)
-        x = x * 180 / pi
-        d = int(x)
-        m = int(60 * (x - d))
-        s = (x - d - m/60) * 3600
-        d = int(data * 180 / pi)
-        
-        if m<10:
-            m = f'0{m:1d}'
-        else:
-            m = f'{m:2d}'
-        
-        if s<10:
-            s = f'0{s:2.5f}'
-        else:
-            s = f'{s:2.5f}'
-        
-        return(f'{d:3d}:{m}:{s}')
-        
-        
 
 
 
