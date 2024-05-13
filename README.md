@@ -12,6 +12,8 @@
    -numpy
    
    -math
+
+   -sys
    
    Obsługiwane systemy:
    
