@@ -63,15 +63,15 @@ przecinkiem, każdy kolejny punkt musi znajdować się w nowym wierszu. Separato
 
 ### Nazwy obsługiwanych flag:
 
- - --xyz2plh obsługuje metodę xyz2plh(przelicza współrzędne X, Y, Z na współrzędne phi, lam, h)
+ - --xyz2plh obsługuje metodę xyz2plh(przelicza współrzędne X, Y, Z na współrzędne phi, lam, h),
 
- - --plh2xyz obsługuje metodę plh2xyz(przelicza współrzędne phi, lam, h na współrzędne X, Y, Z)
+ - --plh2xyz obsługuje metodę plh2xyz(przelicza współrzędne phi, lam, h na współrzędne X, Y, Z),
 
-  - --pl2000 obsługuje metodę pl2000(przelicza współrzędne phi, lam do układu PL2000)
+  - --pl2000 obsługuje metodę pl2000(przelicza współrzędne phi, lam do układu PL2000),
 
-  - --pl1992 obsługuje metodę pl92(przelicza współrzędne phi, lam do układu PL1992)
+  - --pl1992 obsługuje metodę pl92(przelicza współrzędne phi, lam do układu PL1992),
 
-  - --xyz2neu obsługuje metodę xyz2neu(przelicza współrzędne geocentryczne odbiornika do współrzędnych topocentrycznych n, e, u na podstawie współrzędnych x,y,z odbiornika i satelitów)
+  - --xyz2neu obsługuje metodę xyz2neu(przelicza współrzędne geocentryczne odbiornika do współrzędnych topocentrycznych n, e, u na podstawie współrzędnych x,y,z odbiornika i satelitów). Współrzędne punktu początkowego należy wpisywać po fladze odzielone przecinkami lub spacjami.
 
     Przykładowe formaty plików.txt wraz z opisem kolejnych kolumn dla poszczególnych funckji:
 
@@ -92,8 +92,8 @@ przecinkiem, każdy kolejny punkt musi znajdować się w nowym wierszu. Separato
 
 Przykładowy plik ze współrzędnymi:
 
-    >     52.09727222,21.03153333,141.399
-    >     52.09727216,21.03153314,141.400
+   > 		52.09727222,21.03153333,141.399
+   > 		52.09727216,21.03153314,141.400
    
 #### - pl2000:
 - Współrzędna phi punktu wyrażona w stopniach
@@ -103,8 +103,8 @@ Przykładowy plik ze współrzędnymi:
 
 Przykładowy plik ze współrzędnymi:
 
-     >		52.09727222,21.03153333,141.399
-     >		52.09727216,21.03153314,141.400 
+   >		52.09727222,21.03153333,141.399
+   >		52.09727216,21.03153314,141.400 
    
 #### - pl1992:
 - Współrzędna phi punktu wyrażona w stopniach
@@ -113,6 +113,7 @@ Przykładowy plik ze współrzędnymi:
 			
 
 Przykładowy plik ze współrzędnymi:   
+
    >		52.09727222,21.03153333,141.399
    >		52.09727216,21.03153314,141.400      
    
@@ -207,7 +208,7 @@ Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach 
    >		 472071.341,639114.491
    >		 472071.334,639114.478
 
-#### - neu
+#### - xyz2neu
 
    >		python Projekt_infa_1.py --model grs80 --header_lines 1 --xyz2neu 3664940.500 1409153.590 5009571.170 wsp_inp.txt
 
@@ -233,8 +234,34 @@ Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach 
    
 
    >   		0.000,    0.000,  0.000
-   > 		-0.006,  -0.013,  0.001 
+   > 		-0.006,  -0.013,  0.001
 
-## 3. Znane błędy, które nie zostały naprawione:
+## 3. Wyjątki:
+
+### Program skonstrółowany jest tak, aby obsługiwać konkretne wyjątki:
+
+- użycie więcej niż jednej flagi transformującej współrzędne,
+
+- podanie nieistniejącego pliku wejściowego,
+
+- podanie niezaimplementowanej elipsoidy,
+
+- podanie pliku wejściowego z niewłaściwym rozszerzeniem,
+
+- przekazanie nieprawidłowej liczby linijek nagłówka pliku wejściowego, np. ’cztery’, ’5.2’, W przypadku liczby zmiennoprzecinkowej program zaokrągli w dół,
+
+- przekazanie współrzędnych punktu początkowego w nieprawidłowy sposób w transformacji do układu NEU.
+
+- program ignoruje wielkość liter użytych do wpisania flagi, bądź modelu elipsoidy
+
+
+### Wyniki transformacji do układów PL-1992, PL-2000, NEU i geocentrycznego zostały zaokrąglone do trzech miejsc po przecinku.
+
+## 4. Znane błędy, które nie zostały naprawione:
    
-   Transformacja Krasowski na Pl2000 i na Pl1992 nie powinna być używana ponieważ jest to elipsoida lokalna a nie globalna i podaje błędne wyniki.
+####   Transformacja Krasowski na Pl2000 i na Pl1992 nie powinna być używana ponieważ jest to elipsoida lokalna a nie globalna i podaje błędne wyniki.
+
+####   W przypadku użycia flagi --header_lines i podania ujemnej liczby linijek program zaczyna liczenie od końcowych linijek do początkowych co niespowoduje błędu pomimo niepoprwanych wyników.
+
+####   W przypadku podania pliku z jednym punktem w pierwszzej linijce, bez użycia flagi --header_lines program nieprzeliczy współrzędnych i zwróci sam nagłówek nowego pliku.
+   
