@@ -133,14 +133,14 @@ Przykładowy plik ze współrzędnymi:
    >		python Projekt_infa_1.py --model grs80 --header_lines 4 --xyz2plh wsp_inp.txt
 
      
-     Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
+Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
    
 	
- - Współrzędna phi punktu wyrażona w stopniach,
+- Współrzędna phi punktu wyrażona w stopniach,
    
-	- Współrzędna lam punktu wyrażona w stopniach,
+- Współrzędna lam punktu wyrażona w stopniach,
    
-	- Współrzędna h punktu wyrażona w metrach
+- Współrzędna h punktu wyrażona w metrach
  
      
 
@@ -153,16 +153,16 @@ Przykładowy plik ze współrzędnymi:
    >		python Projekt_infa_1.py --model grs80 --header_lines 1 --plh2xyz wyniki_xyz2plh.txt
 
 				
-   Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach oddzielonych spacjami znajdują się:
+Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach oddzielonych spacjami znajdują się:
    
    
-     - Współrzędna X punktu wyrażona w metrach,
+- Współrzędna X punktu wyrażona w metrach,
     
   
-     - Współrzędna Y punktu wyrażona w metrach,
+- Współrzędna Y punktu wyrażona w metrach,
     
   
-     - Współrzędna Z punktu wyrażona w metrach
+- Współrzędna Z punktu wyrażona w metrach
 
    
 	
@@ -176,13 +176,13 @@ Przykładowy plik ze współrzędnymi:
    >		python Projekt_infa_1.py --model grs80 --header_lines 1 --pl2000 wyniki_xyz2plh.txt
 
 				
-    Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
+Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
    
 
-      - Współrzędna X punktu w układzie 2000 wyrażona w metrach,
+- Współrzędna X punktu w układzie 2000 wyrażona w metrach,
    
  
-      - Współrzędna Y punktu w układzie 2000 wyrażona w metrach
+- Współrzędna Y punktu w układzie 2000 wyrażona w metrach
 
     
  
@@ -194,13 +194,13 @@ Przykładowy plik ze współrzędnymi:
    >		python Projekt_infa_1.py --model grs80 --header_lines 1 --pl1992 wyniki_xyz2plh.txt
 
 				
-    Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
+Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
    
 
-      - Współrzędna X punktu w układzie 1992 wyrażona w metrach,
+- Współrzędna X punktu w układzie 1992 wyrażona w metrach,
    
  
-      - Współrzędna Y punktu w układzie 1992 wyrażona w metrach
+- Współrzędna Y punktu w układzie 1992 wyrażona w metrach
 
     
  
@@ -218,16 +218,16 @@ Przykładowy plik ze współrzędnymi:
    >		python Projekt_infa_1.py --model grs80 --header_lines 1 --xyz2neu 3664940.500,1409153.590,5009571.170 wsp_inp.txt
 		
         
-  Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
+Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
   
      
-    - Współrzędna N punktu wyrażona w metrach,
+- Współrzędna N punktu wyrażona w metrach,
     
        
-    - Współrzędna E punktu wyrażona w metrach,
+- Współrzędna E punktu wyrażona w metrach,
     
        
-    - Współrzędna U punktu wyrażona w metrach
+- Współrzędna U punktu wyrażona w metrach
     
  
    
