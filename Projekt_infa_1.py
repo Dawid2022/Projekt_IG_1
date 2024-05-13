@@ -72,7 +72,7 @@ class Transformacje:
         h = r / cos(lat) - N       
         
         if units == "dec_degree":
-            return f"{degrees(lat):.8f}", f"{degrees(lon):.8f}", f"{h:.3f}" 
+            return degrees(lat), degrees(lon), h 
         elif units == "dms":
             lat = self.deg2dms(lat)
             lon = self.deg2dms(lon)
@@ -98,13 +98,15 @@ class Transformacje:
             [metry] współrzędne ortokartezjańskie
         """ 
         
+        
+        
         Rn = self.a/sqrt(1-self.ecc2*sin(phi)**2)
         q = Rn *self.ecc2 *sin(phi)
         X = (Rn + h)*cos(phi)*cos(lam)
         Y = (Rn + h)*cos(phi)*sin(lam)
         Z = (Rn + h)*sin(phi)-q
-        return f'{X:.3f}',f'{Y:.3f}',f'{Z:.3f}'
-        # return X,Y,Z
+
+        return X,Y,Z
 
 
     def xyz2neu(self, X, Y, Z, X_0, Y_0, Z_0):
@@ -124,7 +126,7 @@ class Transformacje:
             [niemianowane] macierz rotacji
         """
        
-        phi, lam, h = [radians(coord) for coord in self.xyz2plh(X,Y,Z)]
+        phi, lam, h = [radians(float(coord)) for coord in self.xyz2plh(X,Y,Z)]
                        
         R = np.array([[-sin(lam), -sin(phi)*cos(lam), cos(phi)*cos(lam)],
                      [  cos(lam), -sin(phi)*sin(lam), cos(phi)*sin(lam)],
@@ -155,7 +157,7 @@ class Transformacje:
         
         [[E], [N], [U]] = R.T @ XYZ_t
     
-        return f'{N:.3f}',f'{E:.3f}',f'{U:.3f}'
+        return N, E, U
 
 
 
@@ -199,7 +201,7 @@ class Transformacje:
         x1992 = xGK * 0.9993 - 5300000
         y1992 = yGK * 0.9993 + 500000
         
-        return f'{x1992:.3f}',f'{y1992:.3f}'
+        return x1992,y1992
 
 
 
@@ -257,7 +259,7 @@ class Transformacje:
         x2000 = xGK * 0.999923
         y2000 = yGK * 0.999923 + numer*1000000 + 500000
     
-        return f'{x2000:.3f}',f'{y2000:.3f}'
+        return x2000,y2000
 
             
 
@@ -301,6 +303,7 @@ if __name__ == "__main__":
     input_file_path = sys.argv[-1]
     immutable_flags = ['--header_lines','--model']
     units = 'dec_degree'
+    
     
     I = []
     for i in sys_line:
@@ -368,7 +371,7 @@ if __name__ == "__main__":
             with open('wyniki_plh2xyz.txt','w') as f:
                 f.write('X[m], Y[m], Z[m] \n')
                 for coords in xyz:
-                    coords_xyz_line = ','.join([str(coord) for coord in coords])
+                    coords_xyz_line = ','.join([f'{coord:.3f}' for coord in coords])
                     f.write(coords_xyz_line + '\n')
     
     
@@ -398,14 +401,14 @@ if __name__ == "__main__":
                          except ValueError:
                              print('Błędnie podałes współrzędne.')
                              sys.exit()
-                                          
+                  
                      n, e, u = geo.xyz2neu(x, y, z, x_0, y_0, z_0)
                      coords_neu.append([n, e, u])
                 
             with open('wyniki_xyz2neu.txt','w') as f:
                  f.write('n[m], e[m], u[m] \n')
                  for coords in coords_neu:
-                     coords_neu_line = ','.join([f'{coord:11.3f}' for coord in coords])
+                     coords_neu_line = ','.join([f'{coord:.3f}' for coord in coords])
                      f.write(coords_neu_line + '\n')  
     
         
@@ -427,7 +430,7 @@ if __name__ == "__main__":
             with open('wyniki_pl2000.txt','w') as f:
                 f.write('x2000[m], y2000[m] \n')
                 for coords in xy:
-                    coords_xy_line = ','.join([str(coord) for coord in coords])
+                    coords_xy_line = ','.join([f'{coord:.3f}' for coord in coords])
                     f.write(coords_xy_line + '\n')
     
                     
@@ -449,7 +452,7 @@ if __name__ == "__main__":
             with open('wyniki_pl1992.txt','w') as f:
                 f.write('x1992[m], y1992[m] \n')
                 for coords in xy:
-                    coords_xy_line = ','.join([str(coord) for coord in coords])
+                    coords_xy_line = ','.join([f'{coord:.3f}' for coord in coords])
                     f.write(coords_xy_line + '\n')
     
     except UnicodeDecodeError:
