@@ -55,7 +55,10 @@
    -WGS84
  
    -Krasowski
- 
+
+   Gdy użytkownik nie wybierze żadnej elipsoidy to domyślnie będzie model grs80.
+
+   Domyślnie długość nagłówka w pliku.txt jest jeden.
 
     Nazwy obsługiwanych funkcji:
 
@@ -88,8 +91,8 @@
 
 	Przykładowy plik ze współrzędnymi:
 
-    >     3664940.500,1409153.590,5009571.170
-    >     3664940.510,1409153.580,5009571.167
+    >     52.09727222,21.03153333,141.399
+    >     52.09727216,21.03153314,141.400
    
 - pl2000:
 	- Współrzędna phi punktu wyrażona w stopniach
@@ -98,8 +101,8 @@
 			
 
 	Przykładowy plik ze współrzędnymi:
-     >		52.09727221841272,21.03153333279777,141.398586823605     
-     >		52.09727216111064,21.031533144230153,141.39974895119667
+     >		52.09727222,21.03153333,141.399
+     >		52.09727216,21.03153314,141.400 
    
 - pl1992:
 	- Współrzędna phi punktu wyrażona w stopniach
@@ -108,8 +111,8 @@
 			
 
 	Przykładowy plik ze współrzędnymi:   
-   >		52.09727221841272,21.03153333279777,141.398586823605     
-   >		52.09727216111064,21.031533144230153,141.39974895119667      
+   >		52.09727222,21.03153333,141.399
+   >		52.09727216,21.03153314,141.400      
    
 - neu: 
 	- Współrzędna X odbiornika wyrażona w metrach
@@ -125,7 +128,7 @@
 
 - xyz2plh:
 
-   >		python Projekt_infa_1.py --xyz2plh wsp_inp.txt
+   >		python Projekt_infa_1.py --model grs80 --header_lines 4 --xyz2plh wsp_inp.txt
 
      Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
    
@@ -137,13 +140,13 @@
  
      
 
-   >     3664940.5000000005,1409153.59,5009571.169999973
-   >     3664940.51,1409153.58,5009571.166999972
+   >     52.09727222,21.03153333,141.399
+   >     52.09727216,21.03153314,141.400
 
 
  - plh2xyz:
 
-   >		python Projekt_infa_1.py --plh2xyz wyniki_xyz2plh.txt
+   >		python Projekt_infa_1.py --model grs80 --header_lines 1 --plh2xyz wyniki_xyz2plh.txt
 
 				
    Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach oddzielonych spacjami znajdują się:
@@ -160,13 +163,13 @@
    
 	
 
-   >	 3664940.500,1409153.590,5009571.170    
-   >	 3664940.510,1409153.580,5009571.167
+   >	 3664940.500,1409153.590,5009571.170
+   >	 3664940.510,1409153.580,5009571.167 
 
 
  - pl2000:
 
-   >		python Projekt_infa_1.py --model grs80  --header_lines 1 --pl2000 wyniki_xyz2plh.txt
+   >		python Projekt_infa_1.py --model grs80 --header_lines 1 --pl2000 wyniki_xyz2plh.txt
 
 				
     Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
@@ -179,12 +182,12 @@
 
     
  
-   >		 5773722.72084984,7502160.783244366
-   >		 5773722.714468763,7502160.770325768
+   >		 5773722.721,7502160.783
+   >		 5773722.714,7502160.770
 
  - pl1992:
 
-   >		python Projekt_infa_1.py --model grs80  --header_lines 1 --pl1992 wyniki_xyz2plh.txt
+   >		python Projekt_infa_1.py --model grs80 --header_lines 1 --pl1992 wyniki_xyz2plh.txt
 
 				
     Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
@@ -197,18 +200,18 @@
 
     
  
-   >		 472071.3409697404,639114.4909251224
-   >		 472071.3342378475,639114.4781920977
+   >		 472071.341,639114.491
+   >		 472071.334,639114.478
 
 - neu
 
-   >		python Projekt_infa_1.py --xyz2neu 3664940.500 1409153.590 5009571.170  wsp_inp.txt
+   >		python Projekt_infa_1.py --model grs80 --header_lines 1 --xyz2neu 3664940.500 1409153.590 5009571.170 wsp_inp.txt
 
 
    lub
 
 
-   >		python Projekt_infa_1.py --xyz2neu 3664940.500,1409153.590,5009571.170  wsp_inp.txt
+   >		python Projekt_infa_1.py --model grs80 --header_lines 1 --xyz2neu 3664940.500,1409153.590,5009571.170 wsp_inp.txt
 		
         
   Wygląd pliku ze współrzędnymi po transformacji, gdzie w kolejnych kolumnach znajdują się:
@@ -225,8 +228,8 @@
  
    
 
-   >   		0.000,      0.000,      0.000       
-   > 		-0.006,     -0.013,      0.001
+   >   		0.000,    0.000,  0.000
+   > 		-0.006,  -0.013,  0.001 
 
 3. Znane błędy, które nie zostały naprawione:
    
