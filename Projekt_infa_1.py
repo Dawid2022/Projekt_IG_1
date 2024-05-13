@@ -98,13 +98,10 @@ class Transformacje:
             [metry] współrzędne ortokartezjańskie
         """ 
         
-<<<<<<< HEAD
-        
-        
-=======
+
         phi = radians(phi)
         lam = radians(lam)
->>>>>>> ea191935056e06688226811db3ac0da60d730ec5
+
         Rn = self.a/sqrt(1-self.ecc2*sin(phi)**2)
         q = Rn *self.ecc2 *sin(phi)
         X = (Rn + h)*cos(phi)*cos(lam)
