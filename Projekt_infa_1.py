@@ -1,8 +1,7 @@
 import sys 
-from math import sin, cos, sqrt, atan, atan2, degrees, radians, pi, tan
+from math import sin, cos, sqrt, atan, degrees, radians, pi, tan
 import numpy as np
 
-o = object()
 
 class Transformacje:
     def __init__(self, model: str = "grs80"):
@@ -27,7 +26,6 @@ class Transformacje:
             self.a = 6378245.000
             self.b = 6356863.018773
         else:
-            # raise NotImplementedError(f"elipsoida {model} nie została zaimplementowana")
             print(f"elipsoida {model} nie została zaimplementowana")
             sys.exit()
             
@@ -72,24 +70,14 @@ class Transformacje:
         lon = atan(Y/X)
         N = self.a / sqrt(1 - self.ecc2 * (sin(lat))**2);
         h = r / cos(lat) - N       
-        # if units == "dec_degree":
-        #     return f"{degrees(lat):.6}", f"{degrees(lon):.6}", f"{h:.3}" 
-        # elif units == "dms":
-        #     lat = self.deg2dms(degrees(lat))
-        #     lon = self.deg2dms(degrees(lon))
-        #     return f"{lat[0]:02d}:{lat[1]:02d}:{lat[2]:.2f}", f"{lon[0]:02d}:{lon[1]:02d}:{lon[2]:.2f}", f"{h:.3f}"
-        # else:
-        #     raise NotImplementedError(f"{units} - nie ma takiego formatu jednostek")
         
         if units == "dec_degree":
-            # return f"{degrees(lat):.8f}", f"{degrees(lon):.8f}", f"{h:.3f}" 
-            return f'{degrees(lat)}', f'{degrees(lon)}', f' {h}'
+            return f"{degrees(lat):.8f}", f"{degrees(lon):.8f}", f"{h:.3f}" 
         elif units == "dms":
             lat = self.deg2dms(lat)
             lon = self.deg2dms(lon)
             return f"{lat}", f"{lon}", f" {h:.3f}"
         else:
-            # raise NotImplementedError(f"{units} - nie ma takiego formatu jednostek")
             print(f"{units} - nie ma takiego formatu jednostek")
             sys.exit()
             
@@ -109,21 +97,14 @@ class Transformacje:
         X, Y, Z : FLOAT
             [metry] współrzędne ortokartezjańskie
         """ 
-        # if units == 'dec_degree':
-        #     phi = radians(phi)
-        #     lam = radians(lam)
-        # elif units == "dms":
-        #     s
-        # else:
-        #     raise NotImplementedError(f"{units} - nie ma takiego formatu jednostek")
         
         Rn = self.a/sqrt(1-self.ecc2*sin(phi)**2)
         q = Rn *self.ecc2 *sin(phi)
         X = (Rn + h)*cos(phi)*cos(lam)
         Y = (Rn + h)*cos(phi)*sin(lam)
         Z = (Rn + h)*sin(phi)-q
-        return X,Y,Z
-    
+        return f'{X:.3f}',f'{Y:.3f}',f'{Z:.3f}'
+        # return X,Y,Z
 
 
     def xyz2neu(self, X, Y, Z, X_0, Y_0, Z_0):
@@ -174,7 +155,7 @@ class Transformacje:
         
         [[E], [N], [U]] = R.T @ XYZ_t
     
-        return N, E, U
+        return f'{N:.3f}',f'{E:.3f}',f'{U:.3f}'
 
 
 
@@ -218,7 +199,7 @@ class Transformacje:
         x1992 = xGK * 0.9993 - 5300000
         y1992 = yGK * 0.9993 + 500000
         
-        return(x1992,y1992)
+        return f'{x1992:.3f}',f'{y1992:.3f}'
 
 
 
@@ -276,7 +257,7 @@ class Transformacje:
         x2000 = xGK * 0.999923
         y2000 = yGK * 0.999923 + numer*1000000 + 500000
     
-        return(x2000,y2000)
+        return f'{x2000:.3f}',f'{y2000:.3f}'
 
             
 
@@ -310,7 +291,6 @@ if __name__ == "__main__":
 
     geo = Transformacje(model = "grs80")
     header_lines = 1
-    # sys_line = map(str.upper, sys.argv[1:])
     sys_line = [sys.argv[0]]
     
     for i in sys.argv[1:-1]:
@@ -319,7 +299,7 @@ if __name__ == "__main__":
     sys_line.append(sys.argv[-1])
     
     input_file_path = sys.argv[-1]
-    immutable_flags = ['--header_lines','--model','--units']
+    immutable_flags = ['--header_lines','--model']
     units = 'dec_degree'
     
     I = []
@@ -343,10 +323,6 @@ if __name__ == "__main__":
         
         model = sys_line[sys_line.index('--model')+1]
         geo = Transformacje(model)
-    
-    if '--units' in sys_line:
-
-        units = sys_line[sys_line.index('--units')+1]
         
 
     try:
